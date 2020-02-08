@@ -263,7 +263,7 @@ streamer-interface-web-service
 
   当我们点击系统日志模块时，即下图
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\1580905928(1).jpg)
+  ![](https://github.com/liuershi/Images/blob/master/1580905928(1).jpg?raw=true)
 
   根据对应的index.html我们可得知
 
