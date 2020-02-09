@@ -263,7 +263,7 @@ streamer-interface-web-service
 
   当我们点击系统日志模块时，即下图
 
-  ![](https://github.com/liuershi/Images/blob/master/1580905928(1).jpg?raw=true)
+  ![](https://github.com/liuershi/Images/raw/master/1580905928(1).jpg?raw=true)
 
   根据对应的index.html我们可得知
 
@@ -1014,8 +1014,43 @@ streamer-interface-web-service
   }
   ```
 
-  包含四个属性，分别为code，即服务端返回的状态码，data即服务端返回的响应数据，message即后端返回状态的消息，status即后端处理的状态，前端根据该属性定义进行数据的显示或者异常的处理等等操作，最后成功渲染数据如下，如图：
+  包含四个属性，分别为code，即服务端返回的状态码，该状态除了0为成功和2为已完成外其他所有状态都为失败，需要alert对应状态码的错误消息；data即服务端返回的响应数据，我们需要渲染的数据就放在其中；message即后端返回状态的消息，一般不显示，只给开发者作参考提示；status即后端处理的状态，前端根据该属性定义进行数据的显示或者异常的处理等等操作，该状态包括有以下几种：
 
+  ```java
+  /**
+   * 成功返回
+   */
+  SUCCESS(200, "success"),
+  /**
+   * 失败返回
+       */
+  FAIL(400, "fail"),
+  /**
+       * 未认证
+       */
+  UNAUTHORIZED(401, "unauthorized"),
+  /**
+       * 拒绝访问
+       */
+  NOT_ALLOWED(403, "not allowed"),
+  /**
+       * 未找到资源
+       */
+  NOT_FOUND(404, "not found"),
+  /**
+       * 系统错误
+       */
+  SYSTEM_ERROR(500, "system error"),
+  /**
+       * 未授权
+       */
+  NOT_LICENSE(999, "not license");
+  ```
+  
+  
+  
+  只有在状态为200时才成功，最后成功渲染数据如下，如图：
+  
   ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\1580909943(1).jpg)
 
 ## 四、各模块具体实现功能
@@ -1060,13 +1095,13 @@ streamer-interface-web-service
 
 当进行添加操作时，首先页面需要知道streamer服务器有哪些可添加的磁盘，我们在加载页面的时候就获取到了磁盘的信息，自己判断那些磁盘已被添加和未被添加，将未被添加的磁盘显示在可添加列表中，此时如图：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\1580917291(1).jpg)
+![](https://github.com/liuershi/Images/blob/master/1580917291(1).jpg?raw=true)
 
 此时我们可以选择需要添加的磁盘，可能存在磁盘信息不完整的情况，服务端可能未扫描处理部分磁盘，此时需要点击扫描按钮从新获取数据（*ST_OP_SERVER_DISK_RESCAN*），将获取到的数据重新显示到页面，此时我们就可以选择需要的磁盘添加到存储池了（*ST_OP_ADD_DISKS_TO_POOL*），不过正常的是，初次登录的时候是未配置存储池的，此时会添加失败，我们需要去添加存储池才能正确添加磁盘。
 
 当我们添加完存储空间之后就可以正确添加磁盘到存储空间了，添加完的磁盘状态如图：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809719849249.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809719849249.png?raw=true)
 
 此时对于状态为在线的磁盘可以进行移除操作（*ST_OP_REMOVE_DISKS_TO_POOL*），而状态为离线的磁盘则也可以移除离线磁盘（*ST_OP_REMOVE_MISSING_FROM_POOL*）。
 
@@ -1074,11 +1109,11 @@ streamer-interface-web-service
 
 存储空间初始状态也是空白的，需要添加（*ST_OP_SET_FILE_BACKUP_SPACE*），默认只能添加文件备份空间，如图所示：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809708978763.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809708978763.png?raw=true)
 
 添加完存储空间后，我们就可以对该存储空间做一些操作：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_158097100122.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_158097100122.png?raw=true)
 
 比如说编辑（*ST_OP_UPDATE_FILE_BACKUP_SPACE_DISASTER_STRATEGY*），即改变我们创建存储空间时的容量策略；
 
@@ -1096,13 +1131,13 @@ streamer-interface-web-service
 
   根据IP添加对应的客户端
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809724273718.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809724273718.png?raw=true)
 
 - 自动添加（*ST_OP_SCAN_CLIENTS*）
 
   根据streamer所处的网段扫描处于同网段的客户端选择添加
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809730893291.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809730893291.png?raw=true)
 
 添加完成客户端后，也可以对客户端进行移除操作（*ST_OP_DEL_CLIENTS*）；
 
@@ -1110,7 +1145,7 @@ streamer-interface-web-service
 
 客户端添加完成后，我们会得到对应客户端中的数据，包括磁盘信息，数据库信息等等，数据渲染完成效果如下：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809733493170.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809733493170.png?raw=true)
 
 在完成对客户端的添加删除操作后，我们可以对客户端中其他信息进行操作，比如说数据库操作：
 
@@ -1123,7 +1158,7 @@ streamer-interface-web-service
 
   添加完客户端初始状态时是无一致性组的，首先可以创建一致性组，通过指定一致性组名创建，一致性组不存在类型为分区的情况，默认为磁盘：
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809741262641.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809741262641.png?raw=true)
 
 - 删除一致性组（*ST_OP_DEL_BACKUP_GROUP*）
 
@@ -1141,21 +1176,21 @@ streamer-interface-web-service
 
   对于初始状态的磁盘，我们首先需要添加备份，添加备份向导如图：
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809752259106.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809752259106.png?raw=true)
 
   首先需要测试服务端与客户端（*ST_OP_ESTABLISH_CHANNELS*），分为网络备份与光纤备份，他们的测试都是同一个操作码；
 
   在测试通过之后才能到下一步配置保存卷的部分：
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809755888682.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809755888682.png?raw=true)
 
   在这部分我们需要配置磁盘的一些配置信息，在配置信息输入合法的情况下可以到下一步设置任务计划部分：
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809757214034.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809757214034.png?raw=true)
 
   默认情况下配置快照策略是不勾选的，我们可以开启快照合并策略：
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809758487043.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809758487043.png?raw=true)
 
   默认情况下是无合并策略的，我们可以通过策略管理删除或者新增策略：
 
@@ -1163,11 +1198,11 @@ streamer-interface-web-service
 
   - 删除策略（*ST_OP_DELETE_CDP_CONSOLID_POLICY*）
 
-    ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809761111421.png)
+    ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809761111421.png?raw=true)
 
   配置完任务计划后，可以到下一步的同步设置，该部分是设置该备份的同步与异步设置：
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809762512245.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809762512245.png?raw=true)
 
   在完成同步设置后，在确认完配置无误后就可以给客户端添加备份了，向导中包含的所有操作都是为该操作做的一些设置。
 
@@ -1187,43 +1222,43 @@ streamer-interface-web-service
 
   对于已经添加的备份，我们可以修改添加备份时设置的任务计划，修改任务计划时的参数和添加任务计划时一致；
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_1580977713653.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_1580977713653.png?raw=true)
 
 - 修改同步设置（*ST_OP_SET_HOSTMIRROR*）
 
   同任务计划一样，都是在添加备份时设置的，可以单独修改；
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_1580977886471.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_1580977886471.png?raw=true)
 
 - 配置保存卷（*ST_OP_UPDATE_RESIZE*）
 
   同样该操作也是添加备份时设置，也可以单独修改；
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809780021595.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809780021595.png?raw=true)
 
 - 手动创建快照（*ST_OP_CREATE_SNAPSHOT*）
 
   对于已经添加备份的磁盘或组我们可以给其创建快照；
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809783343277.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809783343277.png?raw=true)
 
 - 快速恢复
 
   当我们创建完快照之后就可以根据创建的快照进行恢复操作；
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809786387680.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809786387680.png?raw=true)
 
   默认选定的是最新的快照，然后选定需要恢复的模式，物理机或虚拟机，此时显示的Initiator IP很光纤通道中的Initiator WWN和Target WWN都是通过获取恢复快照通道（*ST_OP_GET_CHANNELS_FOR_RESTORE*）这个操作从服务端获取的。
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809787504711.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809787504711.png?raw=true)
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809795763590.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809795763590.png?raw=true)
 
   然后选择需要恢复的虚拟机通道，存在网络通道和光纤通道，最后将向导中选定的额参数提交发起恢复请求（*ST_OP_SNAP_RESTORE*）。
 
 我们也可以通过查看详情获取磁盘或组的具信息，如下图：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809790339222.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809790339222.png?raw=true)
 
 该图中显示了磁盘的基本信息以及备份信息，基本信息即磁盘的硬件信息，备份信息为我们创建备份时添加的信息，还存在快照管理，此时显示的是该磁盘所有的快照信息（*ST_OP_GET_SNAPS_INFO_BY_BIRTH_DATE*），而图表中的数据则是从服务端文件中读取显示的（*ST_OP_GET_REALSNAPS_INFO_BY_BIRTH_DATE*），其中的刷新和查看操作都是再获取一遍数据，而恢复操作同前面的快速恢复操作一致，快速挂载（*ST_OP_REMAP_DISK_TO_ORIGINAL_CLIENT*）操作作用也同恢复一致。
 
@@ -1231,7 +1266,7 @@ streamer-interface-web-service
 
 - 未恢复，未使用
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809797154780.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809797154780.png?raw=true)
 
   其中包括了快速挂载，恢复，删除，保留快照四个操作，前两个操作和前面一样：
 
@@ -1243,7 +1278,7 @@ streamer-interface-web-service
 
 - 已恢复，已使用
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_1580980173136.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_1580980173136.png?raw=true)
 
   包括在线回迁，取消恢复，删除，保留快照等四个操作，其中在线回迁操作又包含全量拷贝和增量拷贝两种情况：
 
@@ -1251,11 +1286,11 @@ streamer-interface-web-service
 
   ​			首先，需要测试恢复的目标IP地址（*ST_OP_RESTORE_TEST_IP*）
 
-  ​			![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809817869034.png)
+  ​			![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809817869034.png?raw=true)
 
   ​			测试通过之后可以添加对应的本地磁盘与目标磁盘，此时数据需要向服务器获取（*ST_OP_GET_SERVER_CLIENT_DISK_LIST*）
 
-  ​			![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809818709780.png)
+  ​			![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809818709780.png?raw=true)
 
   ​			选择需要添加到额本地磁盘与目标磁盘后进行全量恢复操作（*ST_OP_TWICE_RESTORE_FIRST*）。
 
@@ -1277,7 +1312,7 @@ streamer-interface-web-service
 
 - 已恢复，未使用
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809835174963.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809835174963.png?raw=true)
 
   与之前的状态相比，多了一个再次恢复操作，该操作与快速恢复一致。
 
@@ -1285,11 +1320,11 @@ streamer-interface-web-service
 
 该功能的作用是用于创建kvm虚拟机，创建kvm虚拟机首先需要保证kvm宿主机的额存在，若未配置kvm宿主机则需要先在系统设置模块中的应急接管中添加宿主机，添加完宿主机之后，还需要保证当前客户端的系统盘处于被保护的状态，当这两个条件都满足时才能开始应急接管的向导：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_1581167929471.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_1581167929471.png?raw=true)
 
 在开始向导时首先需要获取当前客户端中已保护磁盘或组的所有快照（*ST_OP_GET_SNAPS_INFO_BY_BIRTH_DATE*），在向导中默认会选中系统盘且不能取消，我们也可以选择其它已保护的磁盘，但是必须保证所有选择的磁盘有快照且快照的状态为未恢复，否则无法进行下一步操作，当这些条件都满足时就可以进行下一步了：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811682371595.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811682371595.png?raw=true)
 
 由界面可知，到达此页面时我们需要显示当前kvm宿主机的可用硬件信息，此时就需要获取可用的kvm硬件信息（*ST_OP_KVM_GET_AVAILABLE_HARDWARE_INFO*），比如说CPU数量，内存大小，主机网卡等等信息，最后输入合法的参数配置下就可以添加kvm虚拟机了（*ST_OP_KVM_CREATE*），创建成功的kvm虚拟机可以在应急接管模块中看的。
 
@@ -1307,7 +1342,7 @@ streamer-interface-web-service
 
 通过客户端IP添加指定的客户端（*ST_OP_FILE_BACKUP_ADD_CLIENT*）
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15809951189106.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15809951189106.png?raw=true)
 
 ##### 4.1.2、删除客户端
 
@@ -1319,21 +1354,21 @@ streamer-interface-web-service
 
 首先需要指定备份计划的名称，名称不可重复：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810091432670.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810091432670.png?raw=true)
 
 设置完名称之后需要选择保护对象：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810092931458.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810092931458.png?raw=true)
 
 在这个过程中，我们需要指定所包含或者排除的对象，此时我们需要获取服务器的文件目录（*ST_OP_FILE_BACKUP_GET_CLIENT_FILE_LIST*），而且还需要获取指定文件夹下的其他文件或文件夹（*ST_OP_FILE_BACKUP_GET_CLIENT_FILE_LIST*）。
 
 制定完保护对象之后，就需要指定备份计划保存的位置，通常是存储资源的文件备份空间：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810096403598.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810096403598.png?raw=true)
 
 若文件备份空间正常添加，即空间大小足够，在进行备份策略的设置，与普通客户端中添加备份设置策略类似：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810098334845.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810098334845.png?raw=true)
 
 最后设置完毕确认配置后就可以发送添加备份保护的请求（*ST_OP_FILE_BACKUP_ADD_BACKUP*），需要注意的是客户端离线状态下无法进行此操作。
 
@@ -1343,19 +1378,19 @@ streamer-interface-web-service
 
 在客户端模块中恢复时首先需要选择客户端包含的备份计划，那么就需要获取到这些备份计划信息（*ST_OP_FILE_BACKUP_GET_CLIENTS*）：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810105181029.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810105181029.png?raw=true)
 
 需要注意，若备份计划状态为恢复中时则无法选择，选择完备份计划后需要选择对应的备份点：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810106394724.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810106394724.png?raw=true)
 
 这些备份点的创建是在备份计划模块完成的，我们在后面将这部分，然后选择一个时间点，然后需要选择恢复的文件：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810108861602.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810108861602.png?raw=true)
 
 在选择文件时，张开层级目录显示文件和文件夹的操作与添加备份选定保护对象规则操作一致。，选定文件后，我们可以选择是恢复到原机还是下载，默认为恢复到原机：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810110503693.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810110503693.png?raw=true)
 
 恢复至原机又分为覆盖恢复与自定义恢复，区别只在于是否自己指定恢复路径（*ST_OP_FILE_BACKUP_RESTORE_TO_OVERWRITE*）；另外下载操作会将恢复计划下载到本机，即操作机器上（*ST_OP_FILE_BACKUP_RESTORE_TO_OVERWRITE*），需要注意的是客户端离线状态下无法进行此操作。
 
@@ -1363,7 +1398,7 @@ streamer-interface-web-service
 
 备份计划为在客户端模块中指定某个客户端创建的，每个备份计划都有所属的客户端：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810113719302.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810113719302.png?raw=true)
 
 每个备份计划包括的操作有恢复，增量备份，全量备份，修改备份，删除，查看详情等等。
 
@@ -1379,7 +1414,7 @@ streamer-interface-web-service
 
 作用是修改该备份计划在创建时设置（*ST_OP_FILE_BACKUP_MODIFY_BACKUP_PLAN*）：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810119263566.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810119263566.png?raw=true)
 
 ##### 4.2.4.删除
 
@@ -1389,7 +1424,7 @@ streamer-interface-web-service
 
 会获取关于此任务的信息，包括任务名称，保护对象，保存位置，备份策略以及备份点信息等等：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810128398611.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810128398611.png?raw=true)
 
 其中包含了对快照电动额恢复以及删除操作恢复操作与对备份计划的恢复操作一致，只是不需要选择会的备份点，而删除操作会删除指定的备份点（*ST_OP_FILE_BACKUP_DELETE_BACKUP_BRANCH*），默认只能删除最老得快备份点。
 
@@ -1409,7 +1444,7 @@ streamer-interface-web-service
 
 该模块中的数据是在客户端模块应急接管中配置的，获取该模块数据操作为（*ST_OP_KVM_GET_ALL_VMS_INFO*），获取数据如下：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810133325023.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810133325023.png?raw=true)
 
 主要包括的操作有开启kvm，关闭kvm，全量拷贝，增量恢复，获取快照信息，连接vnc，删除kvm虚拟机等等。
 
@@ -1425,11 +1460,11 @@ streamer-interface-web-service
 
 根据在线回迁流程图我们可知，初始创建的kvm虚拟机状态为已恢复已使用，此时我们可以进行全量拷贝，在全量拷贝的时候我们需要先测试恢复目标的IP（*ST_OP_RESTORE_TEST_IP*）：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810139633016.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810139633016.png?raw=true)
 
 测试完IP后继续下一步添加本地磁盘与目标磁盘，该过程与客户端中快照点二次回迁操作一致：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810141378739.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810141378739.png?raw=true)
 
 选择 需要添加的磁盘后直接进行恢复操作（*ST_OP_TWICE_RESTORE_FIRST*）。
 
@@ -1441,7 +1476,7 @@ streamer-interface-web-service
 
 主要是查看当前kvm虚拟机所包含的快照（该操作需要显示的快照信息包含在获取kvm虚拟机信息中）。
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15810144591609.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15810144591609.png?raw=true)
 
 ##### 5.6、删除
 
@@ -1459,13 +1494,13 @@ streamer-interface-web-service
 
 容灾服务器的作用主要是在容灾客户端添加容灾关系时使用，除此之外，我们还可以对荣在服务器做一些其他的操作，比如说修改密码，修改流量上限，修改服务器IP移除移除已添加的服务器等等。
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_158113613922.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_158113613922.png?raw=true)
 
 ##### 6.1.1、添加容灾服务器
 
 初始状态时无容灾服务器，此时我们可以根据服务器名、服务器IP、用户名、用户密码等添加一台容灾服务器（*ST_OP_ADD_DR_SERVER*），如图所示：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811359498763.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811359498763.png?raw=true)
 
 其中，服务器名和IP需自己指定，用户名与密码初始时为root与infocore。
 
@@ -1473,13 +1508,13 @@ streamer-interface-web-service
 
 对于容灾服务器的密码也可以修改（*ST_OP_CHANGE_DR_PASSWORD*），只需要指定新密码即可。
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811365869249.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811365869249.png?raw=true)
 
 ##### 6.1.3、修改流量上限
 
 我们可以指定新的流量上限也可以直接指定为无上限（*ST_OP_SET_DR_MAX_BANDWIDTH*）。
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811367693718.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811367693718.png?raw=true)
 
 ##### 6.1.4、配置IP
 
@@ -1489,7 +1524,7 @@ streamer-interface-web-service
 
   只需要输入需要添加的IP即可。
 
-  ![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811369303291.png)
+  ![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811369303291.png?raw=true)
 
 - 删除IP（*ST_OP_DELETE_DR_SERVER_IP*）
 
@@ -1507,29 +1542,29 @@ streamer-interface-web-service
 
 添加完容灾关系需要进行一系列的向导，首先我们需要选择添加容灾关系的客户端，该客户端是客户端模块中的客户端，其次需要指定该客户端中一个磁盘或一致性组，并且该磁盘或组的状态必须是已备份的：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811377303170.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811377303170.png?raw=true)
 
 设置完成后，我们需要指定之前添加的容灾服务器，而且离线状态的服务器无法被选择：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811378762641.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811378762641.png?raw=true)
 
 指定完服务期之后，需要配置保存卷，同客户端模块中添加备份同理：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811379869106.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811379869106.png?raw=true)
 
 指定完保存卷后设置任务计划，这里的设置同添加备份一模一样，只是他的属性是容灾的，不是普通客户端类型的：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811380918682.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811380918682.png?raw=true)
 
 最后需要设置传输配置，指定传输协议以及cdp快照，传输协议类型有TCP和UDP两种，而CDP快照则分为新建CDP快照点与原有CDP快照点，还可以是否开启数据加密和数据压缩等等配置：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811381844034.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811381844034.png?raw=true)
 
 最后，我们确认完配置之后就可以添加容灾关系了（*ST_OP_SET_DR_RELATIONSHIP*）。
 
 添加完容灾关系后就可以进行其他操作了，添加完的容灾关系如下，当然我们首先要先获取已添加的容灾关系（*ST_OP_GET_DR_RELATIONSHIP*），获得的容灾关系如下：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811383467043.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811383467043.png?raw=true)
 
 ##### 6.2.2、手动复制
 
@@ -1623,11 +1658,11 @@ streamer-interface-web-service
 
 这个操作需要分为两步完成，首先我们需要指定添加到bond组的网卡，已添加到其他组的网卡不能被添加，可以添加多个网卡，同时指定成组的模式：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811617751421.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811617751421.png?raw=true)
 
 组的模式有适配器传输负载均衡器，轮询，IEEE 动态链接聚合等三种，选择完网卡和成组模式后就可以下一步了，设置网卡的配置信息，配置信息包括bond组的IP地址、子网掩码、默认网、首选DNS服务器、备用DNS服务器等：
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_15811619982245.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_15811619982245.png?raw=true)
 
 设置完成后就可以创建bond组了（*ST_OP_BOND_CREATE*），创建完成后会重启网络配置并回到登录页。
 
@@ -1647,7 +1682,7 @@ streamer-interface-web-service
 
 修改bond组或网卡的IP信息（*ST_OP_SET_SERVER_NETWORKING_IP*），修改完IP后会重启网络配置并回到登录页。
 
-![](D:\Program Files (x86)\WXWork\zhangwei\sortware\photo\企业微信截图_1581164185653.png)
+![](https://github.com/liuershi/Images/blob/master/企业微信截图_1581164185653.png?raw=true)
 
 ##### 8.3.4、移除bond组
 
@@ -1890,6 +1925,28 @@ systemctl status stmweb  #查看服务状态
 systemctl start stmweb   #启动服务
 systemctl stop stmweb    #停止服务
 systemctl restart stmweb #重启服务
+```
+
+运行成功状态如下：
+
+```shell
+stmweb.service - Starts and stops the stmweb daemon
+   Loaded: loaded (/usr/lib/systemd/system/stmweb.service; enabled; vendor preset: disabled)
+   Active: active (running) since Sun 2020-02-02 09:56:56 CST; 1 weeks 0 days ago
+ Main PID: 2082 (java)
+   CGroup: /system.slice/stmweb.service
+           └─2082 /usr/bin/java -jar /usr/local/stmweb/stmweb.jar
+```
+
+停止后状态如下：
+
+```shell
+stmweb.service - Starts and stops the stmweb daemon
+   Loaded: loaded (/usr/lib/systemd/system/stmweb.service; enabled; vendor preset: disabled)
+   Active: failed (Result: exit-code) since Sun 2020-02-09 14:32:37 CST; 1s ago
+  Process: 16670 ExecStopPost=/bin/rm -f /var/run/stmwebd.pid (code=exited, status=0/SUCCESS)
+  Process: 2082 ExecStart=/usr/bin/java -jar /usr/local/stmweb/stmweb.jar (code=exited, status=143)
+ Main PID: 2082 (code=exited, status=143)
 ```
 
 
